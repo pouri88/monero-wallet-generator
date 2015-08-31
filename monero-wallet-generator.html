@@ -8523,14 +8523,21 @@ return{_strlen:lb,_ge_mul8:Va,_keccak:db,_ge_scalarmult:Ta,_ge_fromfe_frombytes_
 
 
 
-var config = {
+var moneroConfig = {
     coinUnitPlaces: 12,
     coinSymbol: 'XMR',
     coinName: 'Monero',
     coinUriPrefix: 'monero:',
     addressPrefix: 18
 };
-var cnUtil = (function(initConfig) {
+var aeonConfig = {
+    coinUnitPlaces: 12,
+    coinSymbol: 'AEON',
+    coinName: 'Aeon',
+    coinUriPrefix: 'aeon:',
+    addressPrefix: 0xB2
+};
+var cnUtilGen = function(initConfig) {
     //var config = $.extend({}, initConfig);
     var config = initConfig;
     config.coinUnits = new JSBigInt(10).pow(config.coinUnitPlaces);
@@ -8951,7 +8958,8 @@ var cnUtil = (function(initConfig) {
     }
 
     return this;
-})(config);
+};
+var cnUtil = cnUtilGen(moneroConfig);
 /*
  mnemonic.js : Converts between 4-byte aligned strings and a human-readable
  sequence of words. Uses 1626 common words taken from wikipedia article:
@@ -10237,7 +10245,12 @@ bC0zLjUsMjAuNGgtNkwyNDQuOCwzMTAuNkwyNDQuOCwzMTAuNnoiLz4KPC9nPgo8L3N2Zz4K">
     <div class="row">
         <div class="col s12">
             <p>
-                This page generates a new <a href="http://getmonero.org/">Monero</a> wallet. It is self contained and
+                This page generates a new
+                <select onchange="js:setCoin(this.selectedIndex);" style="display:block;">
+                  <option>Monero</option>
+                  <option>Aeon</option>
+                </select>
+                wallet. It is self contained and
                 does all the necessary calculations locally, so is suitable for generating a new wallet on a machine
                 that is not connected to the network, and may even never be. This way, you can create
                 a Monero wallet without risking the keys. This file is GPG signed, see <a href="#gpg-instructions">GPG instructions</a>.
@@ -10589,6 +10602,20 @@ function toggle_qr()
     view_key_widget.style.display = "none";
     mnemonic_widget.style.display = "none";
   }
+}
+
+function setCoin(index)
+{
+  prefix_widget = document.getElementById("prefix_widget");
+  if (index == 0) {
+    cnUtil = cnUtilGen(moneroConfig);
+    prefix_widget.value = "4";
+  }
+  else if (index == 1) {
+    cnUtil = cnUtilGen(aeonConfig);
+    prefix_widget.value = "W";
+  }
+  genwallet(null);
 }
 
 genwallet();
